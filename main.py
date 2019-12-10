@@ -16,11 +16,6 @@ import time
 script_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
-def get_lyrics(band):
-    print(darklyrics.get_all_lyrics(band))
-    return darklyrics.get_all_lyrics(band)
-
-
 def write_all_bands_to_file():
     if not os.path.isfile('all_bands.txt'):
         data = glob.glob('./bands/*.txt')
@@ -40,17 +35,33 @@ def write_all_lyrics_to_file():
         with open('all_lyrics.txt', 'w', encoding='utf-8') as lyrics_file:
             for line in band_file:
                 try:
-                    lyrics_file.write(get_lyrics(line))
+                    albums = darklyrics.get_albums(line)
+                    print(albums)
+                    time.sleep(1)
+                    for album in albums:
+                        songs = darklyrics.get_songs(line, album)
+                        print(songs)
+                        time.sleep(1)
+                        for song in songs:
+                            lyrics_file.write(darklyrics.get_lyrics(song, line))
+                            time.sleep(1)
                     print('\nFOUND!\n')
-                    #time.sleep(1)
+                    # time.sleep(1)
                 except darklyrics.LyricsNotFound:
-                    print('No lyrics found')
-                    #time.sleep(1)
+                    print('No lyrics found for ' + line)
+                    # time.sleep(1)
+                time.sleep(1)
             band_file.close()
             lyrics_file.close()
 
 
-print(darklyrics.get_all_lyrics('aborted'))
-write_all_bands_to_file()
-write_all_lyrics_to_file()
-
+#write_all_bands_to_file()
+#write_all_lyrics_to_file()
+try:
+    print(darklyrics.get_lyrics('The Ancient Covenant', 'The Faceless'))
+    print(darklyrics.get_lyrics('The Ancient Covenant'))
+    print(darklyrics.get_songs('The Faceless'))
+    print(darklyrics.get_albums('The Faceless'))
+    print(darklyrics.get_all_lyrics('The Faceless'))
+except darklyrics.LyricsNotFound:
+    print('No lyrics found')
